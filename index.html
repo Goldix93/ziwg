@@ -13,6 +13,7 @@
 
     <!-- CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/ziwg.css" rel="stylesheet">
 
   </head>
 
@@ -23,7 +24,12 @@
       <div>
         <h1>ZIWG</h1>
         <p class="lead">Na dobry początek.</p>
+        <div id="board">
+          <div class="box" id="box1">Drag and throw me</div>
+          <div class="box" id="box2" style="left:392px; background-color:red;">Drag and throw me too</div>
+        </div>
       </div>
+      <button class="btn btn-default" type="submit" id="addBlock">Add Block</button>
 
     </div><!-- /.container -->
 
@@ -34,6 +40,10 @@
     <script src="js/underscore-min.js"></script>
     <script src="js/backbone-min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/CSSPlugin.min.js"></script>
+    <script src="js/Draggable.min.js"></script>
+    <script src="js/TweenLite.min.js"></script>
+    <script src="js/ziwg.js"></script>
     
   </body>
 </html>
