@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+	<Module>
+		<Id>1</Id>
+		<Title>Module 1</Title>
+		<Color>red</Color>
+		<Checkbox>Checkbox1</Checkbox>
+		<Checkbox>Checkbox2</Checkbox>
+		<Dropdown>
+			<DropdownName>Dropdown name</DropdownName>
+			<Item>item1</Item>
+			<Item>item2</Item>
+		</Dropdown>
+		<Field>Field name</Field>
+	</Module>
+	<Module>
+		<Id>2</Id>
+		<Title>Module 2</Title>
+		<Color>red</Color>
+		<Checkbox>Checkbox</Checkbox>
+		<Dropdown>
+			<DropdownName>Dropdown name</DropdownName>
+			<Item>item1</Item>
+			<Item>item2</Item>
+		</Dropdown>
+		<Field>Field name1</Field>
+		<Field>Field name2</Field>
+	</Module>
+	<Module>
+		<Id>3</Id>
+		<Title>Module 3</Title>
+		<Color>red</Color>
+		<Checkbox>Checkbox</Checkbox>
+		<Dropdown>
+			<DropdownName>Dropdown name1</DropdownName>
+			<Item>item1</Item>
+			<Item>item2</Item>
+		</Dropdown>
+		<Dropdown>
+			<DropdownName>Dropdown name2</DropdownName>
+			<Item>item1</Item>
+			<Item>item2</Item>
+		</Dropdown>
+		<Field>Field name</Field>
+	</Module>
+	<Module>
+		<Id>4</Id>
+		<Title>Module 4</Title>
+		<Color>red</Color>
+		<Checkbox>Checkbox</Checkbox>
+		<Dropdown>
+			<DropdownName>Dropdown name</DropdownName>
+			<Item>item1</Item>
+			<Item>item2</Item>
+		</Dropdown>
+		<Field>Field name</Field>
+	</Module>
+</Config>
