@@ -19,14 +19,17 @@
 
   <body>
 
+  <div onmousemove="myFunction(event)">
     <div class="container">
 
       <div id="upperDiv">
         <h1>ZIWG</h1>
         <p class="lead">Block configuration</p>
         <div id="board">
+		<canvas id="myCanvas" width="1000" height="600" style="border:1px solid #000000;">
+		</canvas>
           <!-- <div class="box" id="box1"></div> -->
-        </div>
+		  </div>
       </div>
       <!-- <button class="btn btn-default" type="submit" id="addBlock">Add Block</button> -->
       <div id="buttonsRow" class="row">
@@ -46,6 +49,6 @@
     <script src="js/Draggable.min.js"></script>
     <script src="js/TweenLite.min.js"></script>
     <script src="js/ziwg.js"></script>
-    
+   </div> 
   </body>
 </html>
