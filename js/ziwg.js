@@ -140,6 +140,7 @@ function update() {
 					console.log(array[countLines-1]);
 					pair= ["", ""];
 					draw=false;
+				}
 			}
 	});
 }
