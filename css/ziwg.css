@@ -12,7 +12,7 @@ body {
 .box {
 	background-color: #91e600;
 	text-align: center;
-	font-family: Asap, Avenir, Arial, sans-serif;
+	/*font-family: Asap, Avenir, Arial, sans-serif;*/
 	width: 196px;
 	height: 100px;
 	line-height: 100px;
@@ -22,4 +22,36 @@ body {
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
+	box-shadow: 2px 2px 2px #888888;
+}
+
+.button {
+	/*position: absolute;*/
+	text-align: center;
+	vertical-align: middle;
+	line-height: 100px;
+	background-color: #E0E0E0;
+	height:100px;
+	-webkit-transition: color 1s, background-color 1s;
+    -moz-transition:    color 1s, background-color 1s;
+    -ms-transition:     color 1s, background-color 1s;
+    -o-transition:      color 1s, background-color 1s;
+    transition:         color 1s, background-color 1s;
+
+    -webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+
+	margin-top: 10px;
+	margin-right: 10px;
+}
+
+.button:hover {
+	background-color: #333;
+	color: #FFF;
+}
+
+.button:active {
+	background-color: #111;
+	color: #FFF;
 }

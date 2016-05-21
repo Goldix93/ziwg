@@ -1,15 +1,19 @@
 var $container = $("#board"),
+	$buttonsRow = $("#buttonsRow"),
 	gridWidth = 196,
 	gridHeight = 100,
 	gridRows = 6,
 	gridColumns = 5,
 	i, x, y;
 
+var modulesConfig = [];
 var modules = [];
+var boxCount = 0;
+var currentBox;
 
-
-function Module(id,title,color,checkboxes,dropdowns,fields){
+function Module(id,type,title,color,checkboxes,dropdowns,fields){
 	this.id = id;
+	this.type = type;
     this.title = title;
     this.color = color;
     this.checkboxes = checkboxes;
@@ -51,17 +55,21 @@ TweenLite.set($container, {height: gridRows * gridHeight + 1, width: gridColumns
 TweenLite.set(".box", {width:gridWidth, height:gridHeight, lineHeight:gridHeight + "px"});
 
 getConfig();
-
 $(document).ready(function(){
-
 	
 
 	//Button for adding new block
-	$( "#addBlock" ).click(function() {
-		addNewBox("11", "New Module");
+	$( ".button" ).click(function() {
+		var boxId = $(this).attr("box");
+		console.log("clicked " + $(this).attr("id") +" /box "+ boxId);
+		getBoxFromConfg(boxId);
 
+		console.log(modules);
 	});
 	update();
+
+	console.log(modulesConfig);
+	
 });
 
 
@@ -85,9 +93,13 @@ function update() {
 			}
 		},
 		onClick: function() {
-				var $temp = this.target;
-				$temp.remove();
-				this.kill();
+				var temp = this.target;
+
+				setCurrentBox(temp);
+
+
+				// $(temp).remove();
+				// this.kill();
 			}
 	});
 }
@@ -102,6 +114,7 @@ function getConfig(){
         type: 'GET',
         url: 'file:///D:/Dev/ziwg/config.xml',
         dataType: 'xml',
+        async: false,
         
         success: function(xml){
         	$(xml).find('Module').each(function(){
@@ -135,13 +148,11 @@ function getConfig(){
         			var tmpField = new Field(fieldName, items);
         			fields.push(tmpField);
         		})
-
-        		var tmpModule = new Module(id, title, color, checkboxes, dropdowns, fields);
-
-
-        		modules.push(tmpModule);
-        		addNewBox(tmpModule.id, tmpModule.title, tmpModule.color,tmpModule.checkboxes,tmpModule.dropdowns,tmpModule.fields);
-				update();
+        		var tmpModule = new Module(id, id, title, color, checkboxes, dropdowns, fields);
+				modulesConfig.push(tmpModule);
+				
+        		// addNewBox(id, title, color,checkboxes,dropdowns,fields);
+				addNewButton(id, title);
         	});
         	
     	},
@@ -154,13 +165,53 @@ function getConfig(){
     $.ajax(ajaxObj);
 }
 
-function addNewBox(id, title, color, checkboxes, dropdowns, fields) {
-    $("<div/>").addClass("box").attr("id", "box"+id).css("backgroundColor", color).html(title+"<br>"+JSON.stringify(checkboxes)+"<br>"+JSON.stringify(dropdowns)+"<br>"+JSON.stringify(fields)).appendTo($container);
-	update();
+function getBoxFromConfg(type){
+	var box;
+	for(i = 0; i < modulesConfig.length; i++){
+		var temp = modulesConfig[i];
+		if(temp.type === type){
+			box = temp;
+		}
+	}
+	if(typeof box === "undefined"){
+		return;
+	}
+
+	addNewBox(box);
 }
 
-function addNewButton(id) {
-    $("<button/>").addClass("btn btn-default").attr({id: "addBlock"+id, type: "submit"}).html("add model").appendTo($container);
+function addNewBox(module) {
+	boxCount++;
+	var tmpModule = new Module(boxCount, module.type, module.title, module.color, module.checkboxes, module.dropdowns, module.fields);
+	modules.push(tmpModule);
+
+    $("<div/>").addClass("box").attr("id", "box"+boxCount).css("backgroundColor", module.color).html(module.title).appendTo($container);
+	update();
+
+	// addNewButton(id, title);
+}
+
+// function addNewBox(id, title, color, checkboxes, dropdowns, fields) {
+// 	boxCount++;
+// 	var tmpModule = new Module(boxCount, title, color, checkboxes, dropdowns, fields);
+// 	modules.push(tmpModule);
+
+//     $("<div/>").addClass("box").attr("id", "box"+boxCount).css("backgroundColor", color).html(title).appendTo($container);
+// 	update();
+
+// 	// addNewButton(id, title);
+// }
+
+function addNewButton(id, text) {
+    $("<div/>").addClass("col-md-2 button").attr({id: "button"+id, box: id}).html(text).appendTo($buttonsRow);
+}
+
+function setCurrentBox(box){
+	
+	currentBox = box;
+	console.log($(currentBox).attr("id"));
+	// $(box).remove();
+	// Draggable.get($(box)).kill();
 }
 
 function getRandomColor() {

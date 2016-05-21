@@ -55,4 +55,16 @@
 		</Dropdown>
 		<Field>Field name</Field>
 	</Module>
+	<Module>
+		<Id>5</Id>
+		<Title>Module 5</Title>
+		<Color>red</Color>
+		<Checkbox>Checkbox</Checkbox>
+		<Dropdown>
+			<DropdownName>Dropdown name</DropdownName>
+			<Item>item1</Item>
+			<Item>item2</Item>
+		</Dropdown>
+		<Field>Field name</Field>
+	</Module>
 </Config>
