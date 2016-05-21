@@ -11,6 +11,17 @@ var modules = [];
 var boxCount = 0;
 var currentBox;
 
+var count=1;
+var draw=false;
+
+var cnv = document.getElementById("myCanvas");
+var ctx = cnv.getContext("2d");
+
+var countLines=0;
+var pair= ["", ""];
+var pom= ["", ""];
+var array=new Array;
+
 function Module(id,type,title,color,checkboxes,dropdowns,fields){
 	this.id = id;
 	this.type = type;
@@ -93,15 +104,151 @@ function update() {
 			}
 		},
 		onClick: function() {
-				var temp = this.target;
-
-				setCurrentBox(temp);
-
-
-				// $(temp).remove();
-				// this.kill();
+				var temp = this.target.id;
+				//var xx = document.getElementById(temp);
+				var element = document.getElementById(temp);
+				console.log(window.getComputedStyle(element).transform);
+				var str=window.getComputedStyle(element).transform;
+				var res = str.split("(");
+				//console.log(xx);
+				console.log(res[1]);
+				res = res[1].split(")");
+				res = res[0].split(",");
+				console.log(res);
+				
+				var X = parseInt(res[4]); var Y = parseInt(res[5]);
+				
+				console.log(X);
+				console.log(Y);
+				
+				if(draw==false)
+				{
+					//ctx.beginPath();
+					//ctx.lineWidth="5";
+					//ctx.strokeStyle="green"; // Green path
+					//ctx.moveTo(X,Y);
+					draw=true;
+					pair[0]=temp;
+				}
+				else if(pair[1]=="") {
+					//ctx.lineTo(X,Y);
+					//ctx.stroke(); // Draw it
+					//ctx.endPath();
+					pair[1]=temp;
+					array.push(pair);
+					countLines++;
+					console.log(array[countLines-1]);
+					pair= ["", ""];
+					draw=false;
 			}
 	});
+}
+
+function output() {
+	var i; var j; var begin=""; var out;
+	for(i=0; i<countLines; i++)
+	{
+		for(j=0; j<countLines; j++)
+		{
+			if(array[i][0]==array[j][1]) { break; }
+			if(j==(countLines-1)) {begin=i}
+		}
+		if(begin!="") break;
+	}
+	
+	out=array[begin][0]+"|"+array[begin][1];
+	
+	for(i=1; i<countLines; i++)
+	{
+		for(j=0; j<countLines; j++)
+		{
+			if(array[j][0]==array[begin][1])
+			{
+				out=out+"|"+array[j][1];
+				begin=j;
+			}
+		}
+	}
+	
+	window.alert(out);
+}
+
+function myFunction(e) {
+	ctx.clearRect(0,0,1000,600);
+	console.log(array);
+	var i;
+    for(i=0; i<countLines; i++)
+	{
+		
+		pom = array[i];
+		console.log(array[i]);
+		console.log(array.length);
+		var element = document.getElementById(pom[0]);
+				//console.log(window.getComputedStyle(element).transform);
+				var str=window.getComputedStyle(element).transform;
+				var res = str.split("(");
+				//console.log(xx);
+				//console.log(res[1]);
+				res = res[1].split(")");
+				res = res[0].split(",");
+				//console.log(res);
+				
+				var X1 = parseInt(res[4]); var Y1 = parseInt(res[5]);
+				
+				 element = document.getElementById(pom[1]);
+				//console.log(window.getComputedStyle(element).transform);
+				 str=window.getComputedStyle(element).transform;
+				 res = str.split("(");
+				//console.log(xx);
+				//console.log(res[1]);
+				res = res[1].split(")");
+				res = res[0].split(",");
+				//console.log(res);
+				
+				var X2 = parseInt(res[4]); var Y2 = parseInt(res[5]);
+				
+				
+				ctx.beginPath();
+				ctx.lineWidth="5";
+				ctx.strokeStyle="green"; // Green path
+				ctx.moveTo(X1,Y1);
+				ctx.lineTo(X2,Y2);
+				ctx.stroke();
+				
+	}
+	if(draw==true)
+	{
+				var element = document.getElementById(pair[0]);
+				//console.log(window.getComputedStyle(element).transform);
+				var str=window.getComputedStyle(element).transform;
+				var res = str.split("(");
+				//console.log(xx);
+				//console.log(res[1]);
+				res = res[1].split(")");
+				res = res[0].split(",");
+				//console.log(res);
+				
+				var X1 = parseInt(res[4]); var Y1 = parseInt(res[5]);
+		
+				ctx.beginPath();
+				ctx.lineWidth="5";
+				ctx.strokeStyle="red"; // Green path
+				ctx.moveTo(X1,Y1);
+				
+				var pos = getMousePos(cnv, e);
+				posx = pos.x;
+				posy = pos.y;
+				ctx.lineTo(posx,posy);
+				ctx.stroke();
+	}
+}
+
+function getMousePos(cnv, evt) {
+    var rect = cnv.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+    };
 }
 
 
