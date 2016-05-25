@@ -6,6 +6,9 @@ var $container = $("#board"),
 	gridColumns = 5,
 	i, x, y;
 
+var boardWidth = gridColumns * gridWidth + 1;
+var boardHeight = gridRows * gridHeight + 1;
+
 var modulesConfig = [];
 var modules = [];
 var boxCount = 0;
@@ -14,8 +17,8 @@ var currentBox;
 var count=1;
 var draw=false;
 
-var cnv = document.getElementById("myCanvas");
-var ctx = cnv.getContext("2d");
+// var cnv = document.getElementById("myCanvas");
+// var ctx = cnv.getContext("2d");
 
 var countLines=0;
 var pair= ["", ""];
@@ -58,11 +61,17 @@ function Item(name,type,value){
 for (i = 0; i < gridRows * gridColumns; i++) {
 	y = Math.floor(i / gridColumns) * gridHeight;
 	x = (i * gridWidth) % (gridColumns * gridWidth);
-	$("<div/>").css({position:"absolute", backgroundColor:"#E0E0E0", border:"1px solid #E0E0E0", width:gridWidth-1, height:gridHeight-1, top:y, left:x}).prependTo($container);
+	$("<div/>").css({position:"absolute", backgroundColor:"rgba(224, 224, 224, 0)", width:gridWidth-1, height:gridHeight-1, top:y, left:x}).prependTo($container);
 }
 
+$("<canvas/>").css({backgroundColor: "#E0E0E0"}).attr({id: "myCanvas", width: boardWidth, height: boardHeight}).prependTo($container);
+
+var cnv = document.getElementById("myCanvas");
+var ctx = cnv.getContext("2d");
+
+
 //set the container's size to match the grid, and ensure that the box widths/heights reflect the variables above
-TweenLite.set($container, {height: gridRows * gridHeight + 1, width: gridColumns * gridWidth + 1});
+TweenLite.set($container, {height: boardHeight, width: boardWidth});
 TweenLite.set(".box", {width:gridWidth, height:gridHeight, lineHeight:gridHeight + "px"});
 
 getConfig();
@@ -175,15 +184,15 @@ function output() {
 }
 
 function myFunction(e) {
-	ctx.clearRect(0,0,1000,600);
-	console.log(array);
+	ctx.clearRect(0,0,boardWidth,boardHeight);
+	// console.log(array);
 	var i;
     for(i=0; i<countLines; i++)
 	{
 		
 		pom = array[i];
-		console.log(array[i]);
-		console.log(array.length);
+		// console.log(array[i]);
+		// console.log(array.length);
 		var element = document.getElementById(pom[0]);
 				//console.log(window.getComputedStyle(element).transform);
 				var str=window.getComputedStyle(element).transform;
@@ -233,7 +242,7 @@ function myFunction(e) {
 		
 				ctx.beginPath();
 				ctx.lineWidth="5";
-				ctx.strokeStyle="red"; // Green path
+				ctx.strokeStyle="red"; // Red path
 				ctx.moveTo(X1,Y1);
 				
 				var pos = getMousePos(cnv, e);

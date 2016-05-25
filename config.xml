@@ -3,7 +3,7 @@
 	<Module>
 		<Id>1</Id>
 		<Title>Module 1</Title>
-		<Color>red</Color>
+		<Color>green</Color>
 		<Checkbox>Checkbox1</Checkbox>
 		<Checkbox>Checkbox2</Checkbox>
 		<Dropdown>

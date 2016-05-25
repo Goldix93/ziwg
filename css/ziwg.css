@@ -2,6 +2,7 @@ body {
   background-color:#F0F0F0;
 }
 
+
 #board {
   height:801px; 
   overflow:visible; 
@@ -9,8 +10,12 @@ body {
   position:relative;
 }
 
+#myCanvas {
+	box-shadow: 2px 2px 2px #888888;
+}
+
 .box {
-	background-color: #91e600;
+	background-color: green;
 	text-align: center;
 	/*font-family: Asap, Avenir, Arial, sans-serif;*/
 	width: 196px;
@@ -32,11 +37,11 @@ body {
 	line-height: 100px;
 	background-color: #E0E0E0;
 	height:100px;
-	-webkit-transition: color 1s, background-color 1s;
-    -moz-transition:    color 1s, background-color 1s;
-    -ms-transition:     color 1s, background-color 1s;
-    -o-transition:      color 1s, background-color 1s;
-    transition:         color 1s, background-color 1s;
+	-webkit-transition: color 0.5s, background-color 0.5s;
+    -moz-transition:    color 0.5s, background-color 0.5s;
+    -ms-transition:     color 0.5s, background-color 0.5s;
+    -o-transition:      color 0.5s, background-color 0.5s;
+    transition:         color 0.5s, background-color 0.5s;
 
     -webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
@@ -44,6 +49,8 @@ body {
 
 	margin-top: 10px;
 	margin-right: 10px;
+
+	box-shadow: 2px 2px 2px #888888;
 }
 
 .button:hover {
