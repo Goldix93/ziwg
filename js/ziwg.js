@@ -212,7 +212,7 @@ function myFunction(e) {
 				res = res[1].split(")");
 				res = res[0].split(",");
 				
-				var X1 = parseInt(res[4])+98; var Y1 = parseInt(res[5])+50;
+				var X1 = parseInt(res[4])+(element.offsetWidth/2); var Y1 = parseInt(res[5])+(element.offsetHeight/2);
 				
 				element = document.getElementById("box"+(connectTO[i]));
 				var pom=parseInt(connectTO[i]);
@@ -221,7 +221,7 @@ function myFunction(e) {
 				res = res[1].split(")");
 				res = res[0].split(",");
 				
-				var X2 = parseInt(res[4])+98; var Y2 = parseInt(res[5])+50;
+				var X2 = parseInt(res[4])+(element.offsetWidth/2); var Y2 = parseInt(res[5])+(element.offsetHeight/2);
 				
 				
 				ctx.beginPath();
@@ -241,7 +241,7 @@ function myFunction(e) {
 				res = res[1].split(")");
 				res = res[0].split(",");
 				
-				var X1 = parseInt(res[4])+98; var Y1 = parseInt(res[5])+50;
+				var X1 = parseInt(res[4])+(element.offsetWidth/2); var Y1 = parseInt(res[5])+(element.offsetHeight/2);
 		
 				ctx.beginPath();
 				ctx.lineWidth="5";
