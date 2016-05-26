@@ -14,7 +14,6 @@ var modules = [];
 var boxCount = 0;
 var currentBox;
 
-var count=1;
 var draw=false;
 
 // var cnv = document.getElementById("myCanvas");
@@ -22,8 +21,8 @@ var draw=false;
 
 var countLines=0;
 var pair= ["", ""];
-var pom= ["", ""];
-var array=new Array;
+var connectTO = new Array;
+var connectFROM = new Array;
 
 function Module(id,type,title,color,checkboxes,dropdowns,fields){
 	this.id = id;
@@ -114,108 +113,115 @@ function update() {
 		},
 		onClick: function() {
 				var temp = this.target.id;
-				//var xx = document.getElementById(temp);
+				console.log("temp"+temp);
+				var number=temp.replace('box','');
+				console.log("temp"+number);
+
 				var element = document.getElementById(temp);
 				console.log(window.getComputedStyle(element).transform);
 				var str=window.getComputedStyle(element).transform;
 				var res = str.split("(");
-				//console.log(xx);
-				console.log(res[1]);
+
 				res = res[1].split(")");
 				res = res[0].split(",");
-				console.log(res);
 				
 				var X = parseInt(res[4]); var Y = parseInt(res[5]);
 				
-				console.log(X);
-				console.log(Y);
 				
 				if(draw==false)
 				{
-					//ctx.beginPath();
-					//ctx.lineWidth="5";
-					//ctx.strokeStyle="green"; // Green path
-					//ctx.moveTo(X,Y);
+					if(connectTO[number-1]!=(-1) ) {connectFROM[connectTO[number-1]-1]=-1; connectTO[number-1]=-1; countLines--; }
+
 					draw=true;
-					pair[0]=temp;
+					pair[0]=number;
 				}
 				else if(pair[1]=="") {
-					//ctx.lineTo(X,Y);
-					//ctx.stroke(); // Draw it
-					//ctx.endPath();
-					pair[1]=temp;
-					array.push(pair);
-					countLines++;
-					console.log(array[countLines-1]);
+					if(pair[0]!=number){
+						var old = connectFROM[number-1];
+
+						
+						connectTO[pair[0]-1]=number;
+						if(old!=-1) {connectTO[old-1]=(-1); countLines--; }
+						if(number==connectFROM[connectTO[number-1]-1]) { connectTO[number-1]=-1; }
+						console.log(number+"I"+pair[0]);
+
+						countLines=0;
+						for(i=0; i<connectTO.length; i++)
+						{ connectFROM[i]=-1; }
+						for(i=0; i<connectTO.length; i++)
+						{
+							if(connectTO[i]==-1) continue;
+							else
+							{
+								countLines++;
+								connectFROM[connectTO[i]-1]=i+1;
+							}
+						}
+						
+					}
 					pair= ["", ""];
 					draw=false;
+					myFunction(); //after click not move
 				}
 			}
 	});
 }
 
 function output() {
-	var i; var j; var begin=""; var out;
-	for(i=0; i<countLines; i++)
-	{
-		for(j=0; j<countLines; j++)
-		{
-			if(array[i][0]==array[j][1]) { break; }
-			if(j==(countLines-1)) {begin=i}
-		}
-		if(begin!="") break;
-	}
+	var i; var j; var begin; var out;
 	
-	out=array[begin][0]+"|"+array[begin][1];
-	
-	for(i=1; i<countLines; i++)
+	if(countLines!=boxCount-1) window.alert("There are still missing connections");
+	else 
 	{
-		for(j=0; j<countLines; j++)
+		for(i=0; i<connectFROM.length; i++)
 		{
-			if(array[j][0]==array[begin][1])
+			if(connectFROM[i]==-1)
 			{
-				out=out+"|"+array[j][1];
-				begin=j;
+				j=i+1;
+				out="box"+j;
+				break;
 			}
 		}
+		
+		while(true)
+		{
+			if(connectTO[j-1]!=-1) { out+="|box"+connectTO[j-1]; j=connectTO[j-1]; }
+			else break;
+		}
+		
+		window.alert(out); //output
 	}
-	
-	window.alert(out);
 }
 
 function myFunction(e) {
 	ctx.clearRect(0,0,boardWidth,boardHeight);
-	// console.log(array);
+
 	var i;
-    for(i=0; i<countLines; i++)
+	
+	console.log("TO"+connectTO);
+	console.log("FROM"+connectFROM);
+	
+	for(i=0; i<connectTO.length; i++)
 	{
-		
-		pom = array[i];
-		// console.log(array[i]);
-		// console.log(array.length);
-		var element = document.getElementById(pom[0]);
-				//console.log(window.getComputedStyle(element).transform);
+		if(connectTO[i]==-1) continue;
+		else
+		{
+				var element = document.getElementById("box"+(i+1));
 				var str=window.getComputedStyle(element).transform;
 				var res = str.split("(");
-				//console.log(xx);
-				//console.log(res[1]);
 				res = res[1].split(")");
 				res = res[0].split(",");
-				//console.log(res);
 				
-				var X1 = parseInt(res[4]); var Y1 = parseInt(res[5]);
+				var X1 = parseInt(res[4])+98; var Y1 = parseInt(res[5])+50;
 				
-				 element = document.getElementById(pom[1]);
-				//console.log(window.getComputedStyle(element).transform);
-				 str=window.getComputedStyle(element).transform;
-				 res = str.split("(");
-				//console.log(xx);
-				//console.log(res[1]);
+				element = document.getElementById("box"+(connectTO[i]));
+				var pom=parseInt(connectTO[i]);
+				str=window.getComputedStyle(element).transform;
+				res = str.split("(");
 				res = res[1].split(")");
 				res = res[0].split(",");
-				//console.log(res);
 				
-				var X2 = parseInt(res[4]); var Y2 = parseInt(res[5]);
+				var X2 = parseInt(res[4])+98; var Y2 = parseInt(res[5])+50;
 				
 				
 				ctx.beginPath();
@@ -224,21 +230,18 @@ function myFunction(e) {
 				ctx.moveTo(X1,Y1);
 				ctx.lineTo(X2,Y2);
 				ctx.stroke();
-				
+		}
 	}
+	
 	if(draw==true)
 	{
-				var element = document.getElementById(pair[0]);
-				//console.log(window.getComputedStyle(element).transform);
+				var element = document.getElementById("box"+parseInt(pair[0]));
 				var str=window.getComputedStyle(element).transform;
 				var res = str.split("(");
-				//console.log(xx);
-				//console.log(res[1]);
 				res = res[1].split(")");
 				res = res[0].split(",");
-				//console.log(res);
 				
-				var X1 = parseInt(res[4]); var Y1 = parseInt(res[5]);
+				var X1 = parseInt(res[4])+98; var Y1 = parseInt(res[5])+50;
 		
 				ctx.beginPath();
 				ctx.lineWidth="5";
@@ -251,6 +254,8 @@ function myFunction(e) {
 				ctx.lineTo(posx,posy);
 				ctx.stroke();
 	}
+	
+	console.log("count "+countLines+"\tboxes "+boxCount);
 }
 
 function getMousePos(cnv, evt) {
@@ -339,6 +344,8 @@ function getBoxFromConfg(type){
 
 function addNewBox(module) {
 	boxCount++;
+	connectTO.push(-1);
+	connectFROM.push(-1);
 	var tmpModule = new Module(boxCount, module.type, module.title, module.color, module.checkboxes, module.dropdowns, module.fields);
 	modules.push(tmpModule);
 
