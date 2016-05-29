@@ -17,11 +17,14 @@
 		<Id>2</Id>
 		<Title>Module 2</Title>
 		<Color>red</Color>
-		<Checkbox>Checkbox</Checkbox>
+		<Checkbox>Checkbox1</Checkbox>
 		<Dropdown>
 			<DropdownName>Dropdown name</DropdownName>
 			<Item>item1</Item>
 			<Item>item2</Item>
+			<Item>item3</Item>
+			<Item>item4</Item>
+			<Item>item5</Item>
 		</Dropdown>
 		<Field>Field name1</Field>
 		<Field>Field name2</Field>
@@ -30,7 +33,10 @@
 		<Id>3</Id>
 		<Title>Module 3</Title>
 		<Color>orange</Color>
-		<Checkbox>Checkbox</Checkbox>
+		<Checkbox>Checkbox1</Checkbox>
+		<Checkbox>Checkbox2</Checkbox>
+		<Checkbox>Checkbox3</Checkbox>
+		<Checkbox>Checkbox4</Checkbox>
 		<Dropdown>
 			<DropdownName>Dropdown name1</DropdownName>
 			<Item>item1</Item>

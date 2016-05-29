@@ -14,7 +14,7 @@ var modulesConfig = [];
 var modules = [];
 var boxCount = 0;
 var currentBox;
-var currentAction = "move";
+var currentAction = "connect";
 
 var draw=false;
 
@@ -32,6 +32,8 @@ function Module(id,type,title,color,checkboxes,dropdowns,fields){
 	this.checkboxes = checkboxes;
 	this.dropdowns = dropdowns;
 	this.fields = fields;
+	this.isConfigured = false;
+	this.hasForm = false;
 }
 
 function Checkbox(title,value){
@@ -39,14 +41,15 @@ function Checkbox(title,value){
 	this.value = value;
 }
 
-function Dropdown(title,items){
+function Dropdown(title,items,value){
 	this.title = title;
 	this.items = items;
+	this.value = value;
 }
 
-function Field(title,items){
+function Field(title,item){
 	this.title = title;
-	this.items = items;
+	this.item = item;
 }
 
 function Item(name,type,value){
@@ -84,18 +87,27 @@ $(document).ready(function(){
 
 
 	$('input[name="radioOptions"]').change(function(){
+		$buttonsBottom = $(".button");
 		currentAction = $(this).val();
+		if(currentAction !== "connect"){
+			$buttonsBottom.addClass("cursorDisabled");
+		}else{
+			$buttonsBottom.removeClass("cursorDisabled");
+		}
 	});
 
 
 	//Button for adding new block
 	$( ".button" ).click(function() {
-		
-		var boxId = $(this).attr("box");
+		if(currentAction === "connect"){
+			var boxId = $(this).attr("box");
 
-		getBoxFromConfg(boxId);
+			addNewBox(getBoxFromConfg(boxId));
+			
+		}
 
 	});
+
 	
 
 	update();
@@ -123,53 +135,71 @@ function update() {
 		},
 		onClick: function() {
 
-			var temp = this.target.id;
-			var number=temp.replace('box','');
-			var element = document.getElementById(temp);
-			var str=window.getComputedStyle(element).transform;
-			var res = str.split("(");
-			res = res[1].split(")");
-			res = res[0].split(",");
-			var X = parseInt(res[4]); var Y = parseInt(res[5]);
+			if(currentAction === "connect"){
 
-			if(draw==false){
+				var temp = this.target.id;
+				var number=temp.replace('box','');
+				var element = document.getElementById(temp);
+				var str=window.getComputedStyle(element).transform;
+				var res = str.split("(");
+				res = res[1].split(")");
+				res = res[0].split(",");
+				var X = parseInt(res[4]); var Y = parseInt(res[5]);
 
-				if(connectTO[number-1]!=(-1) ) {
-					connectFROM[connectTO[number-1]-1]=-1; connectTO[number-1]=-1; countLines--; 
-				}
-				draw=true;
-				pair[0]=number;
-			}
-			else if(pair[1]=="") {
-				if(pair[0]!=number){
-					var old = connectFROM[number-1];
-					connectTO[pair[0]-1]=number;
-					if(old!=-1) {connectTO[old-1]=(-1); countLines--; }
-					if(number==connectFROM[connectTO[number-1]-1]) { connectTO[number-1]=-1; }
-					countLines=0;
-					for(i=0; i<connectTO.length; i++){ 
-						connectFROM[i]=-1; 
+				if(draw==false){
+
+					if(connectTO[number-1]!=(-1) ) {
+						connectFROM[connectTO[number-1]-1]=-1; connectTO[number-1]=-1; countLines--; 
 					}
-
-					for(i=0; i<connectTO.length; i++){
-
-						if(connectTO[i]==-1) continue;
-						else
-						{
-							countLines++;
-							connectFROM[connectTO[i]-1]=i+1;
+					draw=true;
+					pair[0]=number;
+				}
+				else if(pair[1]=="") {
+					if(pair[0]!=number){
+						var old = connectFROM[number-1];
+						connectTO[pair[0]-1]=number;
+						if(old!=-1) {connectTO[old-1]=(-1); countLines--; }
+						if(number==connectFROM[connectTO[number-1]-1]) { connectTO[number-1]=-1; }
+						countLines=0;
+						for(i=0; i<connectTO.length; i++){ 
+							connectFROM[i]=-1; 
 						}
+
+						for(i=0; i<connectTO.length; i++){
+
+							if(connectTO[i]==-1) continue;
+							else
+							{
+								countLines++;
+								connectFROM[connectTO[i]-1]=i+1;
+							}
+						}
+
+					}
+					pair= ["", ""];
+					draw=false;
+
+						myFunction(); //after click not move
+
 					}
 
-				}
-				pair= ["", ""];
-				draw=false;
+			}else if(currentAction === "configure"){
+				var temp = this.target;
+				configureBox(temp);
+				
+				
 
-					myFunction(); //after click not move
+			}else{ //delete
+				var temp = this.target;
+				deleteBox($(temp).attr('id'));
+				console.log($(temp).attr('id'));
+				temp.remove();
+				this.kill();
 
-				}
-
+				console.log(modules);
 			}
+
+		}
 
 		});
 }
@@ -306,16 +336,14 @@ function getConfig(){
 						var tmpItem = new Item($(this).text(), "boolean", false);
 						items.push(tmpItem);
 					})
-					var tmpDropdown = new Dropdown(dropdownName, items);
+					var tmpDropdown = new Dropdown(dropdownName, items, items[0].name);
 					dropdowns.push(tmpDropdown);
 				})
 				$(this).find('Field').each(function(){
 					var fieldName = $(this).text();
-					var items = [];
-					var tmpItem = new Item(fieldName, "text", "Some text");
-					items.push(tmpItem);
+					var item = new Item(fieldName, "text", "Some text");
 
-					var tmpField = new Field(fieldName, items);
+					var tmpField = new Field(fieldName, item);
 					fields.push(tmpField);
 				})
 				var tmpModule = new Module(id, id, title, color, checkboxes, dropdowns, fields);
@@ -335,35 +363,196 @@ function getConfig(){
 	$.ajax(ajaxObj);
 }
 
-function getBoxFromConfg(type){
+function modifyModuleConf(id){
+
+	for(i = 0; i < modules.length; i++){
+		
+		if(modules[i].id === id){
+
+			for (j = 0; j < modules[i].checkboxes.length; j++) {
+
+				var value = $("input[id='"+id+"checkbox"+j+"']").is(':checked');
+				modules[i].checkboxes[j].value = value;
+
+			}
+
+			for (j = 0; j < modules[i].dropdowns.length; j++) {
+
+				var value = $("#"+id+"dropdown"+j+" option:selected").text();
+				modules[i].dropdowns[j].value = value;
+
+			}
+
+			for (j = 0; j < modules[i].fields.length; j++) {
+
+				var value = $("#"+id+"field"+j).val();
+				modules[i].fields[j].item.value = value;
+			}
+
+
+			break;
+
+		}
+	}
+	
+	
+	
+	console.log(modules);
+
+}
+
+function modifyModuleIsConfigured(id,isConfigured){
+	for(i = 0; i < modules.length; i++){
+		
+		if(modules[i].id === id){
+			modules[i].isConfigured = isConfigured;
+			break;
+		}
+	}
+}
+
+function modifyModuleHasForm(id,hasForm){
+	for(i = 0; i < modules.length; i++){
+		
+		if(modules[i].id === id){
+			modules[i].hasForm = hasForm;
+			break;
+		}
+	}
+}
+
+function getBoxFromModules(id){
 	var box;
-	for(i = 0; i < modulesConfig.length; i++){
-		var temp = modulesConfig[i];
-		if(temp.type === type){
+	for(i = 0; i < modules.length; i++){
+		var temp = modules[i];
+		if(temp.id === id){
 			box = temp;
+			break;
 		}
 	}
 	if(typeof box === "undefined"){
 		return;
 	}
 
-	addNewBox(box);
-	update();
+	return box;
+}
+
+function getBoxFromConfg(type){
+	var box;
+	for(i = 0; i < modulesConfig.length; i++){
+		var temp = modulesConfig[i];
+		if(temp.type === type){
+			box = temp;
+			break;
+		}
+	}
+	if(typeof box === "undefined"){
+		return;
+	}
+
+	return box;
 }
 
 function addNewBox(module) {
+
+	if(module === "undefined"){
+		return;
+	}
+
 	boxCount++;
 	connectTO.push(-1);
 	connectFROM.push(-1);
-	var tmpModule = new Module(boxCount, module.type, module.title, module.color, module.checkboxes, module.dropdowns, module.fields);
+	var tmpModule = new Module("box"+boxCount, module.type, module.title, module.color, module.checkboxes, module.dropdowns, module.fields);
 	modules.push(tmpModule);
 
-	$("<div/>").addClass("box").attr("id", "box"+boxCount).css("backgroundColor", module.color).html(module.title).appendTo($container);
+	$("<div/>").addClass("box").attr("id", "box"+boxCount).css("backgroundColor", module.color).html('<p class="lead">'+module.title+'</p>').appendTo($container);
+	update();
+}
 
+function deleteBox(id){
+	modules = modules.filter(function (el) {
+                      return el.id !== id;
+                 }
+	);
+}
+
+function configureBox(module){
+	var box = getBoxFromModules($(module).attr('id'));
+	if(box.isConfigured === false){
+		
+		modifyModuleIsConfigured(box.id, true);
+		if (box.hasForm) {
+			$("#form"+box.id).show();
+		}else{
+			addConfigurableItems(box, $("#"+box.id));
+			modifyModuleHasForm(box.id, true);
+		}
+	}
+
+
+}
+
+function deleteConfBox(id){
+	$("#form"+id).hide();
+	modifyModuleIsConfigured(id, false);
 }
 
 function addNewButton(id, text) {
 	$("<div/>").addClass("col-md-2 button").attr({id: "button"+id, box: id}).html(text).appendTo($buttonsRow);
+}
+
+function addConfigurableItems(module,box){
+	$("<form/>").addClass("form-horizontal").attr({id: "form"+module.id}).appendTo(box);
+	var $form = $("#form"+module.id);
+
+	for (i = 0; i < module.checkboxes.length; i++) {
+		var checkbox = module.checkboxes[i];
+		var str = '<div class="form-group">'+
+						'<div class="col-sm-10">'+
+	      					'<div class="checkbox">'+
+	        					'<label>'+
+	          						'<input id="'+module.id+'checkbox'+i+'" type="checkbox"> '+checkbox.title+
+	        					'</label>'+
+	    					'</div>'+
+    					'</div>'+
+  					'</div>';
+  		$(str).appendTo($form);
+	}
+	for (i = 0; i < module.dropdowns.length; i++) {
+		var dropdown = module.dropdowns[i];
+		var id = module.id+'dropdown'+i;
+		var strStart = ' <div class="form-group">'+
+							'<div class="col-sm-offset-1 col-sm-10">'+
+					  			'<label for="'+id+'">'+dropdown.title+'</label>'+
+					  				'<select class="form-control" id="'+id+'">';
+		var strEnd = 				'</select>'+
+							'</div>'+
+						'</div>';
+		var strOptions = '';
+		for (j = 0; j < dropdown.items.length; j++){
+			strOptions = strOptions + '<option>'+dropdown.items[j].name+'</option>';
+		}
+
+  		$(strStart+strOptions+strEnd).appendTo($form);
+
+	}
+	for (i = 0; i < module.fields.length; i++) {
+		var field = module.fields[i];
+		var id = module.id+'field'+i;
+		var str = '<div class="form-group">'+
+					'<div class="col-sm-offset-1 col-sm-10">'+
+					    '<label for="'+id+'" class="control-label">'+field.title+'</label>'+
+					    '<input type="'+field.item.type+'" class="form-control" id="'+id+'" placeholder="'+field.title+'">'+
+				    '</div>'+
+				  '</div>';
+  		$(str).appendTo($form);
+	}
+	$('<div id="'+module.id+'submit" box="'+module.id+'" class="btn btn-default">Submit</div>').click(function() {
+		var boxId = $(this).attr("box");
+		modifyModuleConf(boxId);
+		deleteConfBox(boxId);
+	}).appendTo($form);
+
 }
 
 function setCurrentBox(box){

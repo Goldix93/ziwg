@@ -14,13 +14,21 @@ body {
 	box-shadow: 2px 2px 2px #888888;
 }
 
+.configurable {
+	position: relative;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	box-shadow: 2px 2px 2px #888888;
+}
+
 .box {
 	background-color: green;
 	text-align: center;
 	/*font-family: Asap, Avenir, Arial, sans-serif;*/
 	width: 196px;
-	height: 100px;
-	line-height: 100px;
+	min-height: 100px;
+	/*line-height: 100px;*/
 	color: black;
 	position: absolute;
 	top:0;
@@ -95,4 +103,43 @@ body {
 .buttonTop:active {
 	background-color: #111;
 	color: #FFF;
+}
+
+.btn-primary {
+	 background-color: #444;
+	border-color: #333;
+}
+
+.btn-primary:hover {
+	background-color: #3C3C3C;
+	border-color: #2F2F2F;
+}
+
+.btn-primary:active {
+	background-color: #3C3C3C;
+	border-color: #2F2F2F;
+}
+
+.btn.btn-primary:active {
+	background-color: #3C3C3C;
+	border-color: #2F2F2F;
+}
+
+.btn-primary.active {
+	background-color: #333;
+	border-color: #222;
+}
+
+.btn-primary.active:hover {
+	background-color: #2F2F2F;
+	border-color: #232323;
+}
+
+.btn-primary.active:active {
+	background-color: #2F2F2F;
+	border-color: #232323;
+}
+
+.cursorDisabled {
+	cursor: not-allowed;
 }
