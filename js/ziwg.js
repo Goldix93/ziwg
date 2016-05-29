@@ -15,6 +15,7 @@ var modules = [];
 var boxCount = 0;
 var currentBox;
 var currentAction = "connect";
+var deletedBox = 0;
 
 var draw=false;
 
@@ -23,6 +24,7 @@ var countLines=0;
 var pair= ["", ""];
 var connectTO = new Array;
 var connectFROM = new Array;
+var boxdel = new Array;
 
 function Module(id,type,title,color,checkboxes,dropdowns,fields){
 	this.id = id;
@@ -161,13 +163,13 @@ function update() {
 						if(old!=-1) {connectTO[old-1]=(-1); countLines--; }
 						if(number==connectFROM[connectTO[number-1]-1]) { connectTO[number-1]=-1; }
 						countLines=0;
-						for(i=0; i<connectTO.length; i++){ 
-							connectFROM[i]=-1; 
+						for(i=0; i<connectTO.length; i++){
+							if(connectFROM[i]!=(-2)) connectFROM[i]=-1; 
 						}
 
 						for(i=0; i<connectTO.length; i++){
 
-							if(connectTO[i]==-1) continue;
+							if(connectTO[i]<0) continue;
 							else
 							{
 								countLines++;
@@ -191,11 +193,34 @@ function update() {
 
 			}else{ //delete
 				var temp = this.target;
+				var number=temp.id.replace('box','');
 				deleteBox($(temp).attr('id'));
 				console.log($(temp).attr('id'));
 				temp.remove();
 				this.kill();
-
+				
+				
+				deletedBox++;
+				boxdel.push(number);
+				connectTO[connectFROM[number-1]-1]=(-1);
+				connectFROM[connectTO[number-1]-1]=(-1);
+				connectFROM[number-1]=-2;
+				connectTO[number-1]=-2;
+				
+				/*for(i=0; i<connectFROM.length; i++)
+				{
+					connectFROM[i]=-1;
+					connectTO[i]=-1;
+				}
+				for(i=0; i<boxdel.length; i++)
+				{
+					connectFROM[boxdel[i]-1]=-2;
+					connectTO[boxdel[i]-1]=-2;
+				}*/
+				
+				connectTO[number-1]=(-2);
+				connectFROM[number-1]=(-2);
+				console.log[number];
 				console.log(modules);
 			}
 
@@ -207,7 +232,7 @@ function update() {
 function output() {
 	var i; var j; var begin; var out;
 	
-	if(countLines!=boxCount-1) window.alert("There are still missing connections");
+	if(countLines!=boxCount-1-deletedBox) window.alert("There are still missing connections");
 	else 
 	{
 		for(i=0; i<connectFROM.length; i++)
@@ -215,15 +240,15 @@ function output() {
 			if(connectFROM[i]==-1)
 			{
 				j=i+1;
-				out="box"+j;
+				out=document.getElementById("box"+j).innerText;
 				break;
 			}
 		}
 		
 		while(true)
 		{
-			if(connectTO[j-1]!=-1) { out+="|box"+connectTO[j-1]; j=connectTO[j-1]; }
-			else break;
+			if(connectTO[j-1]>(-1)) { out+="|"+document.getElementById("box"+connectTO[j-1]).innerText; j=connectTO[j-1]; }
+			else { if(connectTO[j-1]==(-1))	break; }
 		}
 		
 		window.alert(out); //output
@@ -232,16 +257,29 @@ function output() {
 
 function myFunction(e) {
 	
+	var check; countLines=0;
+	
+	for(check=0; check<connectTO.length; check++){
+
+							if(connectTO[check]<0) continue;
+							else
+							{
+								countLines++;
+								connectFROM[connectTO[i]-check]=i+check;
+							}
+						}
+	
 	ctx.clearRect(0,0,boardWidth,boardHeight);
 
 	var i;
 	
-	// console.log("TO"+connectTO);
-	// console.log("FROM"+connectFROM);
+	 //console.log("TO"+connectTO);
+	 //console.log("FROM"+connectFROM);
+	 //console.log(countLines);
 	
 	for(i=0; i<connectTO.length; i++)
 	{
-		if(connectTO[i]==-1) continue;
+		if(connectTO[i]<0) continue;
 		else
 		{
 			var element = document.getElementById("box"+(i+1));
@@ -312,7 +350,7 @@ function getConfig(){
 	var ajaxObj = 
 	{
 		type: 'GET',
-		url: 'file:///D:/Dev/ziwg/config.xml',
+		url: 'file:///C:/Users/rewan/Downloads/ziwg-master%20(4)/ziwg-master/config.xml',
 		dataType: 'xml',
 		async: false,
 
