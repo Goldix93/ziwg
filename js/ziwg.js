@@ -240,15 +240,23 @@ function output() {
 			if(connectFROM[i]==-1)
 			{
 				j=i+1;
-				out=document.getElementById("box"+j).innerText;
+				// out=document.getElementById("box"+j).innerText;
+				var box = getBoxFromModules("box"+j);
+				out = box.title + "{" + parseConf(box) + "}";
 				break;
 			}
 		}
 		
 		while(true)
 		{
-			if(connectTO[j-1]>(-1)) { out+="|"+document.getElementById("box"+connectTO[j-1]).innerText; j=connectTO[j-1]; }
-			else { if(connectTO[j-1]==(-1))	break; }
+			if(connectTO[j-1]>(-1)) { 
+				var box = getBoxFromModules("box"+connectTO[j-1]);
+				out += "|" + box.title + "{" + parseConf(box) + "}";
+				j=connectTO[j-1]; 
+			}
+			else { 
+				if(connectTO[j-1]==(-1))	break;
+			}
 		}
 		
 		window.alert(out); //output
@@ -350,7 +358,7 @@ function getConfig(){
 	var ajaxObj = 
 	{
 		type: 'GET',
-		url: 'file:///C:/Users/rewan/Downloads/ziwg-master%20(4)/ziwg-master/config.xml',
+		url: 'file:///D:/Dev/ziwg/config.xml',
 		dataType: 'xml',
 		async: false,
 
@@ -399,6 +407,26 @@ function getConfig(){
 	}
 
 	$.ajax(ajaxObj);
+}
+
+function parseConf(module){
+	var str = '';
+	for (i = 0; i < module.checkboxes.length; i++) {
+		var checkbox = module.checkboxes[i];
+		str += checkbox.title + ":" + checkbox.value + ";";
+  		// if(i !== module.checkboxes.length-1) str += ";";
+	}
+	for (i = 0; i < module.dropdowns.length; i++) {
+		var dropdown = module.dropdowns[i];
+		str += dropdown.title + ":" + dropdown.value + ";";
+  		// if(i !== module.dropdowns.length-1) str += ";";
+	}
+	for (i = 0; i < module.fields.length; i++) {
+		var field = module.fields[i];
+		str += field.title + ":" + field.item.value + ";";
+  		// if(i !== module.fields.length-1) str += ";";
+	}
+	return str;
 }
 
 function modifyModuleConf(id){
